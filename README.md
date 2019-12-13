@@ -369,6 +369,7 @@ zhengLiaoJiLu
 - 可以在为类、协议、函数、常量以及 typedef 宏命名的时候使用前缀，但注意**不要**为成员变量或者方法使用前缀，因为他们本身就包含在类的命名空间内。
 
 - 命名前缀的时候不要和苹果 SDK 框架冲突。
+- 苹果保留**两个字母**的前缀，建议用**三个字母**做前缀
 
 ```objective-c
 // 使用 XR（杏仁首字母）前缀，表示 App 业务模块的组件
@@ -884,6 +885,7 @@ Xcode自带注释快捷键：`option` + `command` + `/`。
 
 @end
 ```
+后面另有一个关于ViewControoler的[规范](#jump)，综合来讲就是保持代码分块的同时，也要保持分块位置固定
 
 ### 不要使用 new 方法
 
@@ -1075,3 +1077,44 @@ array.release;
 /** delegate */
 @property (nonatomic, weak) id <IPCConnectHandlerDelegate> delegate;
 ```
+
+### <span id="jump">ViewController 规范</span>
+整理自: CasaTaloyum [Blog](https://casatwy.com/iosying-yong-jia-gou-tan-viewceng-de-zu-zhi-he-diao-yong-fang-an.html)
+
+```
+@property (nonatomic, strong) UIButton *confirmButton;
+...
+
+#pragma mark - life cycle
+viewDidLoad
+viewWillAppear
+...
+
+#pragma mark - UITableDelegate
+methods
+
+#pragma mark - CustomDelegate
+methods
+
+#pragma mark - event response
+- (void)didTappedConfirmButton:(UIButton *)confirmButton
+
+#pragma mark - private methods
+methods
+
+#pragma mark - getters an setters
+- (UIButton *)confirmButton
+
+```
+- 所有的属性都使用`getter`和`setter`， 且全部都放在最后。
+
+- 每一个`delegate`都把对应的`protocol`名字带上，`delegate`方法写到一块区域。
+
+- `event response`专门开一个代码区域放`button`、`gestureRecognizer`的响应事件。
+
+- 正常情况下`ViewController`里面**不应该**写`private methods`，
+
+	不是delegate方法的，不是event response方法的，不是life cycle方法的，就是private method了。正常情况下ViewController里面一般是不会存在private methods的，这个private methods一般是用于日期换算、图片裁剪啥的这种小功能。这种小功能要么把它写成一个category，要么把他做成一个模块，哪怕这个模块只有一个函数也行。
+	
+	ViewController基本上是大部分业务的载体，本身代码已经相当复杂，所以跟业务关联不大的东西能不放在ViewController里面就不要放。另外一点，这个private method的功能这时候只是你用得到，但是将来说不定别的地方也会用到，一开始就独立出来，有利于将来的代码复用。
+
